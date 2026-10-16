@@ -38,7 +38,7 @@ class CsvExporter:
                 sense_texts.append(", ".join(glosses))
         meaning = "; ".join(f"({i}) {t}" for i, t in enumerate(sense_texts, 1)) if len(sense_texts) > 1 \
             else "".join(sense_texts)
-        return entry.written_form, entry.reading or entry.written_form, meaning
+        return entry.written_form, entry.reading, meaning  # reading is empty for kana-only words
 
     def append(self, entry) -> bool:
         if not self.path:
