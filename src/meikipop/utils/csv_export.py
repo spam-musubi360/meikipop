@@ -46,6 +46,14 @@ class CsvExporter:
         try:
             with self._lock:
                 is_new = not os.path.exists(self.path) or os.path.getsize(self.path) == 0
+                if not is_new:
+                    # a hand-edited file may lack a final newline; don't glue the new row onto its last line
+                    with open(self.path, "rb") as f:
+                        f.seek(-1, os.SEEK_END)
+                        needs_newline = f.read(1) not in (b"\n", b"\r")
+                    if needs_newline:
+                        with open(self.path, "ab") as f:
+                            f.write(b"\r\n")
                 # BOM only on a fresh file so Excel detects UTF-8; appending keeps the file intact
                 with open(self.path, "a", newline="", encoding="utf-8-sig" if is_new else "utf-8") as f:
                     writer = csv.writer(f)
